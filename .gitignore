@@ -1,0 +1,71 @@
+# =========================
+# Python
+# =========================
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pdb
+*.pkl
+*.pickle
+
+# Virtual environment
+.venv/
+env/
+venv/
+ENV/
+
+# Local environment variables
+.env
+*.env
+
+# Python build artifacts
+build/
+dist/
+*.egg-info/
+*.egg
+
+# =========================
+# FastAPI / Uvicorn
+# =========================
+*.log
+
+# =========================
+# FAISS database files
+# =========================
+db/index.faiss
+db/meta.json
+
+# =========================
+# Ollama
+# =========================
+# (No local model files included — kept outside project)
+ollama/
+
+# =========================
+# Editors / OS generated
+# =========================
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# =========================
+# JSON test files, if any
+# =========================
+*.json
+
+# =========================
+# Ignore backups
+# =========================
+*.bak
+*.tmp
+*.old
