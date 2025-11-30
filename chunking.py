@@ -1,12 +1,35 @@
-def chunk_text(text, max_tokens=300, overlap=50):
-    words = text.split()
-    chunks = []
-    start = 0
+import ollama
 
-    while start < len(words):
-        end = start + max_tokens
-        chunk = " ".join(words[start:end])
-        chunks.append(chunk)
-        start = end - overlap
+def semantic_chunking(text, max_chunk_size=800):
+    prompt = f"""
+Split the following document into meaningful sections. 
+Each section should contain complete ideas and stay under {max_chunk_size} characters. 
+Return the result as a list of chunks separated by the delimiter <CHUNK>.
 
+Document:
+{text}
+"""
+
+    response = ollama.generate(
+        model="llama3",
+        prompt=prompt
+    )
+
+    raw_output = response["response"]
+    chunks = [c.strip() for c in raw_output.split("<CHUNK>") if c.strip()]
     return chunks
+
+
+# Fallback simple chunker
+def fallback_chunking(text, size=800):
+    return [text[i:i+size] for i in range(0, len(text), size)]
+
+
+def chunk_text(text):
+    try:
+        chunks = semantic_chunking(text)
+        if len(chunks) == 0:
+            return fallback_chunking(text)
+        return chunks
+    except Exception:
+        return fallback_chunking(text)

@@ -1,6 +1,8 @@
 from fastapi import FastAPI
-from rag import index_document, answer_query
 from pydantic import BaseModel
+from rag import index_document, answer_query
+from rag_evaluator import evaluate_answer
+
 
 app = FastAPI()
 
@@ -17,5 +19,11 @@ class QueryRequest(BaseModel):
 
 @app.post("/query")
 def query_route(body: QueryRequest):
-    answer = answer_query(body.question)
-    return {"answer": answer}
+    answer, sources = answer_query(body.question)
+    evaluation = evaluate_answer(answer, sources)
+
+    return {
+        "answer": answer,
+        "sources": sources,
+        "evaluation": evaluation
+    }
