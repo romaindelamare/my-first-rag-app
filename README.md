@@ -43,7 +43,7 @@ ollama pull nomic-embed-text
 ### Start the API
 
 ```bash
-uvicorn main:app --reload
+uvicorn app.main:app --reload
 ```
 
 Your server will be available at:

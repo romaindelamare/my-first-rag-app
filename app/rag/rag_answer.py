@@ -1,6 +1,4 @@
-# prompts/rag_answer.py
-
-def build_rag_prompt(context, question):
+def build_rag_prompt(context: str, question: str) -> str:
     prompt = f"""
 You are an after-sales service assistant for an e-commerce website.
 You will receive two sections: CONTEXT and QUESTION.

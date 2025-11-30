@@ -1,5 +1,5 @@
 import ollama
-from config import Config
+from app.config import Config
 
 def rewrite_query(question: str) -> str:
     prompt = f"""

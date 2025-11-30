@@ -51,6 +51,7 @@ class VectorStore:
         })
 
     def save(self):
+        os.makedirs("db", exist_ok=True)
         faiss.write_index(self.index, INDEX_FILE)
         with open(META_FILE, "w") as f:
             json.dump(self.meta, f)
@@ -63,11 +64,14 @@ class VectorStore:
 
         # Keyword scoring
         scored = []
-        for chunk in vector_results:
-            kw = keyword_score(query_text, chunk)
-            scored.append((kw, chunk))
+        for entry in vector_results:
+            text = entry["text"]
+            kw = keyword_score(query_text, text)
+            scored.append((kw, entry))
 
-        # Sort by kw relevance
+        # Sort by score
         scored.sort(reverse=True, key=lambda x: x[0])
 
-        return [chunk for score, chunk in scored[:retrieval_k]]
+        # Return metadata dicts (not strings)
+        return [entry for score, entry in scored[:retrieval_k]]
+

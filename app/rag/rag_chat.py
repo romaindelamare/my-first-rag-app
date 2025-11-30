@@ -1,5 +1,5 @@
-from rag import answer_query
-from config import Config
+from app.rag.rag import answer_query
+from app.config import Config
 
 def answer_chat(message, history, model=Config.MODEL_DEFAULT, temperature=0.2):
 

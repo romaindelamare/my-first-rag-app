@@ -33,8 +33,10 @@ dist/
 # =========================
 # FAISS database files
 # =========================
-db/index.faiss
-db/meta.json
+# db/index.faiss
+# db/meta.json
+db/
+uploads/
 
 # =========================
 # Ollama

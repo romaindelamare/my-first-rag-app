@@ -1,5 +1,5 @@
 import ollama
-from config import Config
+from app.config import Config
 
 def score_chunk(question: str, chunk: str) -> int:
     prompt = f"""
@@ -28,7 +28,7 @@ Only return the number.
     except:
         return 0
 
-def rerank(question: str, chunks: list, retrieval_k: int = 5):
+def rerank_chunks(question: str, chunks: list, retrieval_k: int = 5):
     scored = []
     for chunk in chunks:
         s = score_chunk(question, chunk)

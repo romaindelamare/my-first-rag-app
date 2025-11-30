@@ -1,5 +1,5 @@
 import ollama
-from config import Config
+from app.config import Config
 
 def semantic_chunking(text, max_chunk_size=800):
     prompt = f"""
