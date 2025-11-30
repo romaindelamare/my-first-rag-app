@@ -41,12 +41,14 @@ class VectorStore:
             self.index = faiss.IndexFlatL2(self.dim)
             self.meta = []
 
-
-    def add(self, embedding, text):
+    def add(self, embedding, text, doc_id):
         embedding = np.array([embedding]).astype("float32")
         self.index.add(embedding)
-        self.meta.append(text)
 
+        self.meta.append({
+            "doc_id": doc_id,
+            "text": text
+        })
 
     def save(self):
         faiss.write_index(self.index, INDEX_FILE)
@@ -54,9 +56,9 @@ class VectorStore:
             json.dump(self.meta, f)
 
 
-    def search(self, q_emb, top_k=5, query_text=""):
+    def search(self, q_emb, retrieval_k=5, query_text=""):
         # Vector search
-        D, I = self.index.search(np.array([q_emb]).astype("float32"), top_k * 3)
+        D, I = self.index.search(np.array([q_emb]).astype("float32"), retrieval_k * 3)
         vector_results = [self.meta[i] for i in I[0] if i != -1]
 
         # Keyword scoring
@@ -68,4 +70,4 @@ class VectorStore:
         # Sort by kw relevance
         scored.sort(reverse=True, key=lambda x: x[0])
 
-        return [chunk for score, chunk in scored[:top_k]]
+        return [chunk for score, chunk in scored[:retrieval_k]]

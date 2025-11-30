@@ -1,4 +1,5 @@
 import ollama
+from config import Config
 
 def evaluate_answer(answer: str, sources: list) -> dict:
     src_text = "\n\n".join(sources)
@@ -27,7 +28,7 @@ Respond ONLY with JSON.
 """
 
     response = ollama.generate(
-        model="llama3",
+        model=Config.MODEL_DEFAULT,
         prompt=prompt,
     )
 

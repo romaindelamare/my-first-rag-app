@@ -23,7 +23,7 @@ Ideal for building private assistants, knowledge base bots, or experimenting wit
 ### Install Python dependencies
 
 ```bash
-pip install fastapi uvicorn faiss-cpu pypdf ollama
+pip install fastapi python-multipart uvicorn faiss-cpu pypdf python-docx ollama
 ```
 
 ### Install Ollama
@@ -34,7 +34,9 @@ Download from:
 ### Pull required models
 
 ```bash
-ollama pull llama3
+ollama pull phi3:mini
+ollama pull llama3.2:3b
+ollama pull gemma:2b
 ollama pull nomic-embed-text
 ```
 

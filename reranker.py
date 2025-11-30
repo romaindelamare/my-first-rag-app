@@ -1,4 +1,5 @@
 import ollama
+from config import Config
 
 def score_chunk(question: str, chunk: str) -> int:
     prompt = f"""
@@ -17,7 +18,7 @@ Only return the number.
 """
 
     response = ollama.generate(
-        model="llama3",
+        model=Config.MODEL_DEFAULT,
         prompt=prompt
     )
 
@@ -27,8 +28,7 @@ Only return the number.
     except:
         return 0
 
-
-def rerank(question: str, chunks: list, top_k: int = 5):
+def rerank(question: str, chunks: list, retrieval_k: int = 5):
     scored = []
     for chunk in chunks:
         s = score_chunk(question, chunk)
@@ -36,4 +36,4 @@ def rerank(question: str, chunks: list, top_k: int = 5):
 
     scored.sort(reverse=True, key=lambda x: x[0])
 
-    return [chunk for score, chunk in scored[:top_k]]
+    return [chunk for score, chunk in scored[:retrieval_k]]

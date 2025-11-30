@@ -1,4 +1,5 @@
 import ollama
+from config import Config
 
 def semantic_chunking(text, max_chunk_size=800):
     prompt = f"""
@@ -11,7 +12,7 @@ Document:
 """
 
     response = ollama.generate(
-        model="llama3",
+        model=Config.MODEL_DEFAULT,
         prompt=prompt
     )
 
@@ -19,11 +20,8 @@ Document:
     chunks = [c.strip() for c in raw_output.split("<CHUNK>") if c.strip()]
     return chunks
 
-
-# Fallback simple chunker
 def fallback_chunking(text, size=800):
     return [text[i:i+size] for i in range(0, len(text), size)]
-
 
 def chunk_text(text):
     try:
