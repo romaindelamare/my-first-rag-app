@@ -1,8 +1,6 @@
 import os
 import uuid
-import faiss
 from fastapi import APIRouter, File, UploadFile
-import numpy as np
 from app.ingestion.extractor import extract_text
 from app.rag.chunking import chunk_text
 from app.rag.embeddings import embed_text
@@ -43,33 +41,57 @@ async def upload_document(file: UploadFile = File(...)):
 
 @router.get("/documents")
 def list_documents():
-    docs = {}
+    results = {}
+
     for entry in vs.meta:
         doc_id = entry["doc_id"]
-        docs.setdefault(doc_id, 0)
-        docs[doc_id] += 1
+        if doc_id not in results:
+            results[doc_id] = 0
+        results[doc_id] += 1
 
-    return docs
+    return results
+
+@router.get("/documents/{doc_id}")
+def get_document_chunks(doc_id: str):
+    chunks = [entry for entry in vs.meta if entry["doc_id"] == doc_id]
+
+    if not chunks:
+        return {"error": "Document not found"}
+
+    return {
+        "doc_id": doc_id,
+        "chunks": chunks
+    }
 
 @router.delete("/documents/{doc_id}")
 def delete_document(doc_id: str):
-    # filter out chunks from this document
     new_meta = []
-    new_embeddings = []
+    new_vectors = []
 
-    # rebuild data
-    for i, entry in enumerate(vs.meta):
+    # Filter out chunks from that document
+    for idx, entry in enumerate(vs.meta):
         if entry["doc_id"] != doc_id:
             new_meta.append(entry)
-            new_embeddings.append(vs.index.reconstruct(i))
+            new_vectors.append(vs.index.reconstruct(idx))
 
-    # create a fresh index
-    new_index = faiss.IndexFlatL2(vs.dim)
-    if new_embeddings:
-        new_index.add(np.array(new_embeddings).astype("float32"))
+    if len(new_meta) == len(vs.meta):
+        return {"error": "Document not found"}
+
+    # Rebuild FAISS index
+    import numpy as np
+    import faiss
 
     vs.meta = new_meta
-    vs.index = new_index
+    vs.index = faiss.IndexFlatL2(vs.dim)
+
+    if new_vectors:
+        vs.index.add(np.array(new_vectors).astype("float32"))
+
     vs.save()
 
     return {"status": "deleted", "doc_id": doc_id}
+
+@router.post("/documents/{doc_id}/reindex")
+def reindex_document(doc_id: str):
+    delete_document(doc_id)
+    return {"status": "ready_for_upload", "doc_id": doc_id}
