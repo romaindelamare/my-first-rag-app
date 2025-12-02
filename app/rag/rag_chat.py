@@ -1,26 +1,33 @@
+from app.core.memory import memory
 from app.rag.rag import answer_query
-from app.config import Config
+from app.rag.summarizer import summarize_messages
 
-def answer_chat(message, history, model=Config.MODEL_DEFAULT, temperature=0.2):
+def answer_chat(session_id: str, user_message: str, model: str, temperature: float,
+                top_p: float, top_k: int):
+    """
+    Full RAG-powered chat pipeline.
+    """
 
-    # Build a memory prompt
-    memory_prompt = f"""
-The following is a conversation between a user and an AI assistant.
-Use the memory to help answer the user's new message.
-Do NOT repeat the memory in the answer.
+    # 1. Add user message to memory
+    memory.add_message(session_id, "user", user_message)
 
-MEMORY:
-{history}
+    # 2. Summarize long history
+    history = memory.get_messages(session_id)
+    history = summarize_messages(history)
 
-NEW MESSAGE:
-{message}
-"""
+    # 3. Build chat context from memory
+    chat_context = "\n".join(f"{m['role']}: {m['content']}" for m in history)
 
-    # Use RAG normally (rewriting → retrieval → reranking → answer)
+    # 4. Run RAG to answer user's message
     answer, sources = answer_query(
-        memory_prompt,
+        question=user_message,
         model=model,
-        temperature=temperature
+        temperature=temperature,
+        top_p=top_p,
+        top_k=top_k
     )
 
-    return answer, sources
+    # 5. Add assistant response to memory
+    memory.add_message(session_id, "assistant", answer)
+
+    return answer, sources, chat_context
