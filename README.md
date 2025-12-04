@@ -1,37 +1,102 @@
-# 📘 **My first RAG app**
+# 📘 **My First RAG App (Local AI Chat + Document Intelligence)**
 
-## 🔍 Project Overview
+A fully local **Retrieval-Augmented Generation (RAG)** application featuring:
 
-This project is a fully local **Retrieval-Augmented Generation (RAG)** system built with:
+* ⚡ **FastAPI** backend
+* 📄 **Document ingestion & chunking**
+* 🔍 **FAISS** vector store
+* 🤖 **Ollama** for local LLM inference
+* 🧠 **Local embeddings** with `nomic-embed-text`
+* 💬 **ChatGPT-style Frontend** with conversation history
+* 📚 **Document viewer & chunk inspector**
+* 📊 **FAISS index inspector**
 
-* **FastAPI** as the backend
-* **FAISS** for vector search
-* **Ollama** for local LLMs (LLaMA 3, Mistral, Phi-3, etc.)
-* **nomic-embed-text** for embeddings
+Everything runs **offline** — no API keys, no cloud, fully private.
 
-It allows you to:
+---
 
-* Index your own documents
-* Perform semantic search
-* Ask grounded questions based on document content
-* Run everything **offline**, without API keys or cloud services
+# 🧱 Architecture Overview
 
-Ideal for building private assistants, knowledge base bots, or experimenting with RAG architectures.
+```
++-----------------------+        +-----------------------+
+|       Frontend        |        |        Backend        |
+|  React + Vite + TS    | <----> |      FastAPI          |
+|                       |        |  RAG pipeline:         |
+| - Chat UI             |        |   - Chunking           |
+| - Sidebar sessions    |        |   - Embeddings         |
+| - Sources drawer      |        |   - FAISS search       |
+| - Documents page      |        |   - Reranking          |
+| - FAISS inspector     |        |   - Guardrails         |
++-----------+-----------+        |   - LLM (Ollama)       |
+            |                    +-----------+------------+
+            |                                |
+            |                                |
+            v                                v
+   +-----------------+              +-----------------------+
+   | Local Browser   |              |       Ollama          |
+   |  Storage        |              |  LLaMA / Phi / Gemma  |
+   | (session data)  |              |  nomic-embed-text     |
+   +-----------------+              +-----------------------+
+```
 
-## ⚙️ Installation
+---
 
-### Install Python dependencies
+# 🚀 Features
+
+### 💬 **Chat interface**
+
+* ChatGPT-style UI
+* Conversation history
+* LocalStorage session management
+* Source citations drawer
+* Clean Tailwind v4 styling
+
+### 📄 **Document Management**
+
+* Upload PDF / TXT / DOCX
+* Chunk viewer (Perplexity-style)
+* Delete & reindex documents
+* Automatic metadata management
+
+### 🔍 **FAISS Index Inspector**
+
+* Vector count
+* Embedding dimension
+* Disk size
+* Index health
+
+### 🧩 **RAG Pipeline**
+
+* Text chunking
+* Embedding generation
+* Hybrid search (vector + keyword scoring)
+* Reranking
+* Rewrite & guardrail layers
+
+### 🔐 **Fully Offline**
+
+* No cloud
+* No OpenAI key
+* No telemetry
+* All models run locally
+
+---
+
+# ⚙️ Backend Installation
+
+### 1. Install Python dependencies
 
 ```bash
 pip install fastapi python-multipart uvicorn faiss-cpu pypdf python-docx ollama
 ```
 
-### Install Ollama
+### 2. Install Ollama
 
-Download from:
-[https://ollama.com/download](https://ollama.com/download)
+Download the desktop app:
 
-### Pull required models
+➡️ [https://ollama.com/download](https://ollama.com/download)
+
+### 3. Pull required models
 
 ```bash
 ollama pull phi3:mini
@@ -40,14 +105,39 @@ ollama pull gemma:2b
 ollama pull nomic-embed-text
 ```
 
-### Start the API
+### 4. Run the backend
 
 ```bash
-uvicorn app.main:app --reload
+uvicorn app.main:app --reload --port 8000
 ```
 
-Your server will be available at:
+Your API runs at:
 
+👉 [http://127.0.0.1:8000](http://127.0.0.1:8000)
+
+---
+
+# 🎨 Frontend Installation
+
+### 1. Go to the frontend folder
+
+```bash
+cd rag-frontend
 ```
-http://127.0.0.1:8000
+
+### 2. Install dependencies
+
+```bash
+npm install
+npm install tailwindcss @tailwindcss/vite
 ```
+
+### 3. Start development mode
+
+```bash
+npm run dev
+```
+
+Frontend is available at:
+
+👉 [http://localhost:5173](http://localhost:5173)

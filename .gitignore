@@ -48,9 +48,15 @@ ollama/
 # Editors / OS generated
 # =========================
 .vscode/
+!.vscode/extensions.json
 .idea/
 *.swp
 *.swo
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
 # macOS
 .DS_Store
@@ -71,3 +77,20 @@ desktop.ini
 *.bak
 *.tmp
 *.old
+
+# =========================
+# React
+# =========================
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+node_modules
+dist
+dist-ssr
+*.local
