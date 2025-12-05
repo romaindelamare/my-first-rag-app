@@ -3,3 +3,27 @@ html, body, #root {
   padding: 0;
   height: 100%;
 }
+
+
+.code-block-wrapper {
+  position: relative;
+}
+
+.copy-button {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  padding: 3px 8px;
+  font-size: 12px;
+  background: #2d2d2d;
+  border: 1px solid #555;
+  border-radius: 4px;
+  color: #eee;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.15s ease-in-out;
+}
+
+.copy-button:hover {
+  opacity: 1;
+}

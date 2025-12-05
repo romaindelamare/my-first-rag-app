@@ -8,10 +8,13 @@ import {
   loadSessionMessages,
   saveSessionMessages,
 } from "../utils/sessionManager";
+import "highlight.js/styles/github-dark.css";
+import { renderMarkdown } from "../utils/markdown";
 
 interface ChatMessage {
   role: "user" | "assistant";
   content: string;
+  rendered?: string;
   sources?: SourceChunk[];
 }
 
@@ -38,12 +41,21 @@ export default function Chat({ sessionId }: Props) {
 
   useEffect(() => {
     if (!loaded) return;
-    saveSessionMessages(sessionId, messages);
-  }, [messages, sessionId, loaded]);
+      saveSessionMessages(sessionId, messages);
+    }, [messages, sessionId, loaded]);
 
-  useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+    useEffect(() => {
+    const el = bottomRef.current;
+    if (!el) return;
+
+    const isNearBottom =
+      window.innerHeight + window.scrollY >= document.body.offsetHeight - 150;
+
+    if (isNearBottom) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
   }, [messages]);
+
 
   async function handleSend() {
     if (!input.trim()) return;
@@ -60,13 +72,15 @@ export default function Chat({ sessionId }: Props) {
     try {
       const response = await sendChat(sessionId, userInput);
 
-      const assistantMessage: ChatMessage = {
-        role: "assistant",
-        content: response.answer,
-        sources: response.sources,
-      };
+      // Create an empty assistant message first
+      setMessages((prev) => [
+        ...prev,
+        { role: "assistant", content: "", rendered: "", sources: response.sources },
+      ]);
 
-      setMessages((prev) => [...prev, assistantMessage]);
+      // Animate the incoming message
+      await animateAssistantResponse(response.answer, response.sources);
+
     } catch {
       setMessages((prev) => [
         ...prev,
@@ -77,6 +91,31 @@ export default function Chat({ sessionId }: Props) {
       ]);
     }
   }
+
+  async function animateAssistantResponse(fullText: string, sources?: SourceChunk[]) {
+    let displayed = "";
+
+    for (let i = 0; i < fullText.length; i++) {
+      displayed += fullText[i];
+
+      const rendered = await renderMarkdown(displayed);
+
+      setMessages((prev) => {
+        const updated = [...prev];
+        updated[updated.length - 1] = {
+          role: "assistant",
+          content: displayed,
+          rendered,
+          sources,
+        };
+        return updated;
+      });
+
+      await new Promise((res) => setTimeout(res, 8)); // typing speed
+    }
+  }
+
+
 
   return (
     <div className="h-full bg-neutral-900 text-neutral-100 flex flex-col">
@@ -100,7 +139,10 @@ export default function Chat({ sessionId }: Props) {
                   }
                 `}
               >
-                {m.content}
+                <div
+                  className="prose prose-invert max-w-none whitespace-pre-wrap"
+                  dangerouslySetInnerHTML={{ __html: m.rendered || m.content }}
+                />
 
                 {m.sources && m.sources.length > 0 && (
                   <button

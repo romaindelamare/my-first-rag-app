@@ -9,9 +9,16 @@ Rules:
 - Never invent details, policies, or procedures.
 - Keep the answer factual, concise, and customer-friendly.
 
-Output Format:
-1. Provide exactly 3 bullet points summarizing the relevant information.
-2. Then include a 1–2 sentence explanation underneath the bullets.
+Output Format (Markdown Required):
+- Respond **only in Markdown**.
+- Use simple Markdown formatting, such as:
+  - `-` for bullet points
+  - `**bold**` for emphasis (optional)
+  - table
+  - code block
+  - titles
+  - etc
+- Do NOT use HTML.
 
 CONTEXT:
 {context}

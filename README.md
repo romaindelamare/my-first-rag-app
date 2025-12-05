@@ -130,6 +130,9 @@ cd rag-frontend
 ```bash
 npm install
 npm install tailwindcss @tailwindcss/vite
+npm install marked highlight.js shiki
+npm install dompurify
+npm install @types/dompurify --save-dev
 ```
 
 ### 3. Start development mode

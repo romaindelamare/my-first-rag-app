@@ -1,4 +1,5 @@
 import ollama
+import codecs
 from app.core.store import vs
 from app.config import Config
 from app.rag.rag_answer import build_rag_prompt
@@ -54,7 +55,11 @@ def answer_query(
     )
     answer = result["response"]
 
-    # 7. Return answer with full metadata for UI
+    # 7. Decode all escape sequences properly
+    if isinstance(answer, str):
+        answer = codecs.decode(answer, 'unicode_escape')
+
+    # 8. Return answer with full metadata for UI
     sources = [
         {"doc_id": entry["doc_id"], "text": entry["text"]}
         for entry in top_chunks
