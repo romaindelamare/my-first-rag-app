@@ -28,12 +28,16 @@ Only return the number.
     except:
         return 0
 
-def rerank_chunks(question: str, chunks: list, retrieval_k: int = 5):
+def rerank_chunks(question: str, chunks: list):
+    if not chunks:
+        return []
+
     scored = []
     for chunk in chunks:
         s = score_chunk(question, chunk)
-        scored.append((s, chunk))
+        scored.append({
+            "score": s,
+            **chunk
+        })
 
-    scored.sort(reverse=True, key=lambda x: x[0])
-
-    return [chunk for score, chunk in scored[:retrieval_k]]
+    return sorted(scored, key=lambda x: x["score"], reverse=True)

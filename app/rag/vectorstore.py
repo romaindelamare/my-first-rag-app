@@ -56,22 +56,39 @@ class VectorStore:
         with open(META_FILE, "w") as f:
             json.dump(self.meta, f)
 
-
     def search(self, q_emb, retrieval_k=5, query_text=""):
-        # Vector search
+        # 1. Vector search
         D, I = self.index.search(np.array([q_emb]).astype("float32"), retrieval_k * 3)
-        vector_results = [self.meta[i] for i in I[0] if i != -1]
 
-        # Keyword scoring
+        vector_results = []
+        for i in I[0]:
+            if i == -1:
+                continue
+
+            entry = self.meta[i]
+
+            # Enforce correct format
+            if isinstance(entry, dict) and "text" in entry:
+                vector_results.append(entry)
+            else:
+                # Convert non-dict entries to dict format
+                vector_results.append({
+                    "doc_id": str(i),
+                    "text": str(entry)
+                })
+
+        # 2. Keyword scoring
         scored = []
         for entry in vector_results:
-            text = entry["text"]
-            kw = keyword_score(query_text, text)
-            scored.append((kw, entry))
+            kw = keyword_score(query_text, entry["text"])
+            scored.append({
+                "score": kw,
+                **entry
+            })
 
-        # Sort by score
-        scored.sort(reverse=True, key=lambda x: x[0])
+        # 3. Sort & truncate
+        scored = sorted(scored, key=lambda x: x["score"], reverse=True)
+        
+        return scored[:retrieval_k]
 
-        # Return metadata dicts (not strings)
-        return [entry for score, entry in scored[:retrieval_k]]
 

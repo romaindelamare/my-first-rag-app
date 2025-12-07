@@ -1,9 +1,13 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from app.core.logging_middleware import LoggingMiddleware
+from app.core.errors import RagError
+from app.core.exception_handlers import rag_error_handler
 from app.api.routes_query import router as query_router
 from app.api.routes_chat import router as chat_router
 from app.api.routes_docs import router as docs_router
 from app.api.routes_debug import router as debug_router
+from app.api.routes_faiss import router as faiss_router
 
 def create_app() -> FastAPI:
     app = FastAPI(
@@ -13,7 +17,7 @@ def create_app() -> FastAPI:
     )
 
     # ------------------------------------------------------
-    # CORS
+    # Middlewares
     # ------------------------------------------------------
     app.add_middleware(
         CORSMiddleware,
@@ -22,6 +26,7 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    app.add_middleware(LoggingMiddleware)
 
     # ------------------------------------------------------
     # Routers
@@ -30,6 +35,9 @@ def create_app() -> FastAPI:
     app.include_router(chat_router, prefix="/api")
     app.include_router(docs_router, prefix="/api")
     app.include_router(debug_router, prefix="/api")
+    app.include_router(faiss_router, prefix="/api")
+
+    app.add_exception_handler(RagError, rag_error_handler)
 
     return app
 
