@@ -1,3 +1,4 @@
+import type { DocumentChunk } from "../models/rag";
 import API from "./client";
 
 export function listDocuments() {
@@ -25,7 +26,5 @@ export function uploadDocument(form: FormData) {
 }
 
 export async function getDocumentChunks(docId: string) {
-  return API.get<{ chunks: { text: string; doc_id: string }[] }>(
-    `/documents/${docId}`
-  );
+  return API.get<{ chunks: DocumentChunk[] }>(`/documents/${docId}`);
 }

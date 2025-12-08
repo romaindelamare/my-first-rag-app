@@ -41,14 +41,9 @@ class VectorStore:
             self.index = faiss.IndexFlatL2(self.dim)
             self.meta = []
 
-    def add(self, embedding, text, doc_id):
-        embedding = np.array([embedding]).astype("float32")
-        self.index.add(embedding)
-
-        self.meta.append({
-            "doc_id": doc_id,
-            "text": text
-        })
+    def add(self, emb, chunk):
+        self.index.add(np.array([emb]).astype("float32"))
+        self.meta.append(chunk)
 
     def save(self):
         os.makedirs("db", exist_ok=True)

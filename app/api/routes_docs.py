@@ -26,9 +26,9 @@ async def upload_document(file: UploadFile = File(...)):
     chunks = chunk_text(text)
 
     # embed and store
-    for c in chunks:
-        emb = embed_text(c)
-        vs.add(emb, c, doc_id)
+    for chunk in chunks:
+        emb = embed_text(chunk["text"])
+        vs.add(emb, chunk)
 
     vs.save()
 

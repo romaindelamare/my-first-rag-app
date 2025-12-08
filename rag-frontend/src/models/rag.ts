@@ -3,6 +3,14 @@ export interface SourceChunk {
   text: string;
 }
 
+export interface DocumentChunk {
+  doc_id: string;
+  chunk_index: number;
+  text: string;
+  offset_start: number;
+  offset_end: number;
+}
+
 export interface HallucinationResult {
   score: number;
   hallucinated: boolean;

@@ -4,13 +4,14 @@ import { Trash2, RefreshCcw } from "lucide-react";
 import UploadBox from "../components/UploadBox";
 import { getDocumentChunks } from "../api/docs";
 import ChunkDrawer from "../components/ChunkDrawer";
+import type { DocumentChunk } from "../models/rag";
 
 export default function DocumentsPage() {
   const [docs, setDocs] = useState<Record<string, { count: number }>>({});
   const [loading, setLoading] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [selectedDoc, setSelectedDoc] = useState<string | null>(null);
-  const [chunks, setChunks] = useState<{ text: string; doc_id: string }[]>([]);
+  const [chunks, setChunks] = useState<DocumentChunk[]>([]);
 
 
   async function refreshDocs() {
@@ -62,7 +63,6 @@ export default function DocumentsPage() {
     setChunks(res.data.chunks ?? []);
     setDrawerOpen(true);
   }
-
 
   return (
     <div className="min-h-screen bg-neutral-900 text-neutral-100 p-8">
