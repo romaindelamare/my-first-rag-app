@@ -1,5 +1,5 @@
 import ollama
-from app.config import Config
+from app.core.config import CONFIG
 
 def rewrite_query(question: str) -> str:
     prompt = f"""
@@ -18,7 +18,7 @@ Original question:
 """
 
     response = ollama.generate(
-        model=Config.MODEL_DEFAULT,
+        model=CONFIG.llm_model,
         prompt=prompt
     )
 

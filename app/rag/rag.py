@@ -2,7 +2,7 @@ import ollama
 import codecs
 import logging
 from app.core.store import vs
-from app.config import Config
+from app.core.config import CONFIG
 from app.rag.rag_answer import build_rag_prompt
 from app.rag.chunking import chunk_text
 from app.rag.embeddings import embed_text
@@ -12,6 +12,8 @@ from app.core.errors import EmbeddingError, LLMError, PromptError, RagError, Rer
 from app.core.timer import Timer
 from app.core.logger import log_stage
 from app.core.metrics import metrics
+from app.rag.rag_evaluator import align_citations, detect_hallucination, evaluate_answer, guardrail_decision, safety_check, semantic_score
+from app.core.confidence import compute_confidence
 
 logger = logging.getLogger("rag")
 
@@ -26,10 +28,10 @@ def index_document(text):
 
 def answer_query(
         question,
-        model=Config.MODEL_DEFAULT,
-        temperature=Config.TEMPERATURE_DEFAULT,
-        top_p=Config.TOP_P_DEFAULT,
-        top_k=Config.TOP_K_DEFAULT):
+        model=CONFIG.llm_model,
+        temperature=CONFIG.temperature,
+        top_p=CONFIG.top_p,
+        top_k=CONFIG.top_k):
     try:
         return _answer_query_internal(question, model, temperature, top_p, top_k)
     except RagError as e:
@@ -41,10 +43,10 @@ def answer_query(
     
 def _answer_query_internal(
         question,
-        model=Config.MODEL_DEFAULT,
-        temperature=Config.TEMPERATURE_DEFAULT,
-        top_p=Config.TOP_P_DEFAULT,
-        top_k=Config.TOP_K_DEFAULT):
+        model=CONFIG.llm_model,
+        temperature=CONFIG.temperature,
+        top_p=CONFIG.top_p,
+        top_k=CONFIG.top_k):
 
     logger.info("🔎 [QUERY] User question: %s", question)
 
@@ -133,7 +135,7 @@ def _answer_query_internal(
     except Exception as e:
         log_stage("LLM_GENERATION", False, t.ms if 't' in locals() else 0, str(e))
         raise LLMError(f"LLM generation failed: {e}")
-
+    
     # 8. Decode
     if isinstance(answer, str):
         answer = codecs.decode(answer, "unicode_escape")
@@ -141,7 +143,48 @@ def _answer_query_internal(
     # 9. Build sources
     sources = [{"doc_id": c["doc_id"], "text": c["text"]} for c in top_chunks]
 
+    # 10. Evaluation & Guardrails
+    evaluation = evaluate_answer(answer, sources)
+    semantic = semantic_score(answer, sources)
+    hallucination = detect_hallucination(answer, sources)
+    citations = align_citations(answer, sources)
+    safety = safety_check(answer)
+    confidence = compute_confidence(
+        evaluation,
+        semantic,
+        hallucination,
+        citations,
+        safety,
+    )
+
+    decision = guardrail_decision(
+        answer,
+        evaluation,
+        hallucination,
+        semantic,
+        safety,
+        citations,
+    )
+
+    if decision["allowed"]:
+        confidence_level = confidence["level"]
+    else:
+        confidence_level = "blocked"
+        
     logger.info("🎉 [RAG] Query completed successfully")
     metrics.increment_queries()
 
-    return answer, sources
+    return {
+        "answer": decision["final_answer"],
+        "allowed": decision["allowed"],
+        "reason": decision["reason"],
+        "sources": sources,
+        "confidence": confidence_level,
+        "metrics": {
+            "evaluation": evaluation,
+            "semantic": semantic,
+            "hallucination": hallucination,
+            "citations": citations,
+            "safety": safety,
+        },
+    }

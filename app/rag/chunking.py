@@ -1,9 +1,10 @@
 import uuid
 import re
 from app.core.logger import logger
+from app.core.config import CONFIG
 
-MAX_CHARS = 800
-OVERLAP = 120
+MAX_CHARS = CONFIG.max_chunk_chars
+OVERLAP = CONFIG.overlap_chars
 MIN_CHUNK_SIZE = 200
 
 def split_by_sentences(text: str):

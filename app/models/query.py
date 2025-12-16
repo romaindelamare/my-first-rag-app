@@ -1,9 +1,9 @@
 from pydantic import BaseModel
-from app.config import Config
+from app.core.config import CONFIG
 
 class QueryRequest(BaseModel):
     question: str
-    model: str = Config.MODEL_DEFAULT
-    temperature: float = Config.TEMPERATURE_DEFAULT
-    top_p: float = Config.TOP_P_DEFAULT
-    top_k: int = Config.TOP_K_DEFAULT
+    model: str = CONFIG.llm_model
+    temperature: float = CONFIG.temperature
+    top_p: float = CONFIG.top_p
+    top_k: int = CONFIG.top_k

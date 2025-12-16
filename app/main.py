@@ -10,6 +10,8 @@ from app.api.routes_debug import router as debug_router
 from app.api.routes_faiss import router as faiss_router
 from app.api.routes_evaluation import router as evaluation_router
 from app.api.routes_benchmark import router as benchmark_router
+from app.core.config import CONFIG
+from app.core.logger import logger
 
 def create_app() -> FastAPI:
     app = FastAPI(
@@ -44,5 +46,10 @@ def create_app() -> FastAPI:
     app.add_exception_handler(RagError, rag_error_handler)
 
     return app
+
+logger.info(
+    "🧩 Loaded RAG config: %s",
+    CONFIG.model_dump()
+)
 
 app = create_app()

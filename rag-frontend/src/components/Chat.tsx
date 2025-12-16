@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { Send } from "lucide-react";
 import { sendChat } from "../api/chat";
-import type { SourceChunk } from "../models/rag";
+import type { SourceChunk, Confidence } from "../models/rag";
 import SourcesDrawer from "./SourcesDrawer";
 
 import {
@@ -16,6 +16,7 @@ interface ChatMessage {
   content: string;
   rendered?: string;
   sources?: SourceChunk[];
+  confidence?: Confidence;
 }
 
 interface Props {
@@ -79,7 +80,7 @@ export default function Chat({ sessionId }: Props) {
       ]);
 
       // Animate the incoming message
-      await animateAssistantResponse(response.answer, response.sources);
+      await animateAssistantResponse(response.answer, response.confidence, response.sources);
 
     } catch {
       setMessages((prev) => [
@@ -92,7 +93,7 @@ export default function Chat({ sessionId }: Props) {
     }
   }
 
-  async function animateAssistantResponse(fullText: string, sources?: SourceChunk[]) {
+  async function animateAssistantResponse(fullText: string, confidence?: Confidence, sources?: SourceChunk[]) {
     let displayed = "";
 
     for (let i = 0; i < fullText.length; i++) {
@@ -107,6 +108,7 @@ export default function Chat({ sessionId }: Props) {
           content: displayed,
           rendered,
           sources,
+          confidence
         };
         return updated;
       });
@@ -144,13 +146,36 @@ export default function Chat({ sessionId }: Props) {
                   dangerouslySetInnerHTML={{ __html: m.rendered || m.content }}
                 />
 
-                {m.sources && m.sources.length > 0 && (
-                  <button
-                    className="text-xs text-blue-400 hover:text-blue-300 mt-2 underline"
-                    onClick={() => setDrawerSources(m.sources!)}
-                  >
-                    View Sources ({m.sources.length})
-                  </button>
+                {m.role === "assistant" && (m.confidence || (m.sources && m.sources.length > 0)) && (
+                  <div className="mt-2 flex items-center justify-between gap-4">
+                    <div>
+                      {m.confidence && (
+                        <span
+                          className={`inline-block text-xs px-2 py-0.5 rounded-full font-semibold
+                            ${
+                              m.confidence === "high"
+                                ? "bg-green-600/20 text-green-400"
+                                : m.confidence === "medium"
+                                ? "bg-yellow-600/20 text-yellow-400"
+                                : m.confidence === "low"
+                                ? "bg-orange-600/20 text-orange-400"
+                                : "bg-red-600/20 text-red-400"
+                            }
+                          `}
+                        >
+                          Confidence: {m.confidence.toUpperCase()}
+                        </span>
+                      )}
+                    </div>
+                    {m.sources && m.sources.length > 0 && (
+                      <button
+                        className="text-xs text-blue-400 hover:text-blue-300 underline"
+                        onClick={() => setDrawerSources(m.sources!)}
+                      >
+                        View Sources ({m.sources.length})
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
             </div>

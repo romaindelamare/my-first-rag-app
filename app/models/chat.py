@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import List, Dict
 
-from app.config import Config
+from app.core.config import CONFIG
 
 class ChatMessage(BaseModel):
     role: str
@@ -10,7 +10,7 @@ class ChatMessage(BaseModel):
 class ChatRequest(BaseModel):
     session_id: str
     messages: List[ChatMessage]
-    model: str = Config.MODEL_DEFAULT
-    temperature: float = Config.TEMPERATURE_DEFAULT
-    top_p: float = Config.TOP_P_DEFAULT
-    top_k: int = Config.TOP_K_DEFAULT
+    model: str = CONFIG.llm_model
+    temperature: float = CONFIG.temperature
+    top_p: float = CONFIG.top_p
+    top_k: int = CONFIG.top_k

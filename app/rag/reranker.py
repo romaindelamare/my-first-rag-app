@@ -1,5 +1,5 @@
 import ollama
-from app.config import Config
+from app.core.config import CONFIG
 
 def score_chunk(question: str, chunk: str) -> int:
     prompt = f"""
@@ -18,7 +18,7 @@ Only return the number.
 """
 
     response = ollama.generate(
-        model=Config.MODEL_DEFAULT,
+        model=CONFIG.llm_model,
         prompt=prompt
     )
 

@@ -11,56 +11,12 @@ export interface DocumentChunk {
   offset_end: number;
 }
 
-export interface HallucinationResult {
-  score: number;
-  hallucinated: boolean;
-}
-
-export interface SemanticScore {
-  chunk_scores: number[];
-  average: number;
-  max: number;
-  min: number;
-  confidence: "low" | "medium" | "high";
-}
-
-export interface Citation {
-  sentence: string;
-  source_doc_id: string | null;
-  score: number;
-}
-
-export interface SafetyResult {
-  safe: boolean;
-  category: string | null;
-  score: number;
-}
-
-export interface Decision {
-  allowed: boolean;
-  reason: string | null;
-  final_answer: string;
-}
-
 export interface ChatResponse {
   answer: string;
+  allowed: boolean;
+  reason: string | null;
+  confidence?: Confidence;
   sources: SourceChunk[];
-  memory_context: string;
 }
 
-export interface QueryResponse {
-  answer: string;
-  sources: SourceChunk[];
-  evaluation: Evaluation;
-  hallucination: HallucinationResult;
-  semantic: SemanticScore;
-  citations: Citation[];
-  safety: SafetyResult;
-  decision: Decision;
-}
-
-export interface Evaluation {
-    overlap_score: string;
-    source_count: string;
-    confidence: string;
-}
+export type Confidence = "high" | "medium" | "low" | "blocked";
