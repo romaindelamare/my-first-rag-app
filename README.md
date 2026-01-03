@@ -2,14 +2,14 @@
 
 A fully local **Retrieval-Augmented Generation (RAG)** application featuring:
 
-* ⚡ **FastAPI** backend
-* 📄 **Document ingestion & chunking**
-* 🔍 **FAISS** vector store
-* 🤖 **Ollama** for local LLM inference
-* 🧠 **Local embeddings** with `nomic-embed-text`
-* 💬 **ChatGPT-style Frontend** with conversation history
-* 📚 **Document viewer & chunk inspector**
-* 📊 **FAISS index inspector**
+- ⚡ **FastAPI** backend
+- 📄 **Document ingestion & chunking**
+- 🔍 **FAISS** vector store
+- 🤖 **Ollama** for local LLM inference
+- 🧠 **Local embeddings** with `nomic-embed-text`
+- 💬 **ChatGPT-style Frontend** with conversation history
+- 📚 **Document viewer & chunk inspector**
+- 📊 **FAISS index inspector**
 
 Everything runs **offline** — no API keys, no cloud, fully private.
 
@@ -45,49 +45,54 @@ Everything runs **offline** — no API keys, no cloud, fully private.
 
 ### 💬 **Chat interface**
 
-* ChatGPT-style UI
-* Conversation history
-* LocalStorage session management
-* Source citations drawer
-* Clean Tailwind v4 styling
+- ChatGPT-style UI
+- Conversation history
+- LocalStorage session management
+- Source citations drawer
+- Clean Tailwind v4 styling
 
 ### 📄 **Document Management**
 
-* Upload PDF / TXT / DOCX
-* Chunk viewer (Perplexity-style)
-* Delete & reindex documents
-* Automatic metadata management
+- Upload PDF / TXT / DOCX
+- Chunk viewer (Perplexity-style)
+- Delete & reindex documents
+- Automatic metadata management
 
 ### 🔍 **FAISS Index Inspector**
 
-* Vector count
-* Embedding dimension
-* Disk size
-* Index health
+- Vector count
+- Embedding dimension
+- Disk size
+- Index health
 
 ### 🧩 **RAG Pipeline**
 
-* Text chunking
-* Embedding generation
-* Hybrid search (vector + keyword scoring)
-* Reranking
-* Rewrite & guardrail layers
+- Text chunking
+- Embedding generation
+- Hybrid search (vector + keyword scoring)
+- Reranking
+- Rewrite & guardrail layers
 
 ### 🔐 **Fully Offline**
 
-* No cloud
-* No OpenAI key
-* No telemetry
-* All models run locally
+- No cloud
+- No OpenAI key
+- No telemetry
+- All models run locally
 
 ---
 
-# ⚙️ Backend Installation
+# 🛠️ Installation
+
+> Requires Python 3.10+  
+> Requires Node.js 18+
+
+## ⚙️ Backend Installation
 
 ### 1. Install Python dependencies
 
 ```bash
-pip install fastapi python-multipart uvicorn faiss-cpu pypdf python-docx ollama
+pip install -r requirements.txt
 ```
 
 ### 2. Install Ollama
@@ -117,7 +122,7 @@ Your API runs at:
 
 ---
 
-# 🎨 Frontend Installation
+## 🎨 Frontend Installation
 
 ### 1. Go to the frontend folder
 
@@ -129,10 +134,6 @@ cd rag-frontend
 
 ```bash
 npm install
-npm install tailwindcss @tailwindcss/vite
-npm install marked highlight.js shiki
-npm install dompurify
-npm install @types/dompurify --save-dev
 ```
 
 ### 3. Start development mode
