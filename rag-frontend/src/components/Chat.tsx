@@ -79,7 +79,6 @@ export default function Chat({ sessionId }: Props) {
         { role: "assistant", content: "", rendered: "", sources: response.sources },
       ]);
 
-      // Animate the incoming message
       await animateAssistantResponse(response.answer, response.confidence, response.sources);
 
     } catch {

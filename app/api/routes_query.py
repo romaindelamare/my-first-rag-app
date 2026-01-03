@@ -4,7 +4,6 @@ import ollama
 from app.core.config import CONFIG
 from app.models.query import QueryRequest
 from app.rag.rag import answer_query
-from app.rag.rag_evaluator import align_citations, detect_hallucination, evaluate_answer, guardrail_decision, safety_check, semantic_score
 
 router = APIRouter()
 

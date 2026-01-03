@@ -15,11 +15,9 @@ export async function sendChat(
     const res = await API.post<ChatResponse>("/chat", body);
     return res.data;
   } catch (err: unknown) {
-    // Check if error is an AxiosError
     if (isAxiosError(err)) {
       const data = err.response?.data;
 
-      // RAG structured error
       if (data && typeof data === "object" && "type" in data) {
         const type = (data as { type: string }).type;
         const message = (data as { message?: string }).message ?? "RAG error";
@@ -28,14 +26,12 @@ export async function sendChat(
         }
       }
 
-      // FastAPI HTTPException
       if (data && typeof data === "object" && "detail" in data) {
         const detail = (data as { detail: string }).detail;
         throw new Error(detail);
       }
     }
 
-    // Fallback: network error or unknown error
     throw new Error("Failed to communicate with the server.");
   }
 }
